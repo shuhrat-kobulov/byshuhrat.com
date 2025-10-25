@@ -11,20 +11,6 @@ export interface Post {
     bluesky?: string;
 }
 
-export const metadata = {
-    title: "Shuhrat's Blog",
-    description: 'A blog by Shuhrat Kobulov',
-    openGraph: {
-        title: "Shuhrat's Blog",
-    },
-    alternates: {
-        types: {
-            'application/atom+xml': 'https://byshuhrat.com/atom.xml',
-            'application/rss+xml': 'https://byshuhrat.com/rss.xml',
-        },
-    },
-};
-
 export async function getPosts(): Promise<Post[]> {
     const entries = await readdir('./public/', { withFileTypes: true });
     const dirs = entries
@@ -54,14 +40,14 @@ export async function generateFeed() {
             email: 'shukhratbekqobulov@gmail.com',
             link: site_url,
         },
-        description: metadata.description,
+        description: 'A blog by Shuhrat Kobulov',
         favicon: `${site_url}/icon.png`,
         feedLinks: { atom: `${site_url}atom.xml`, rss: `${site_url}rss.xml` },
         generator: 'Feed for Node.js',
         id: site_url,
         image: 'https://github.com/shuhrat-kobulov.png',
         link: site_url,
-        title: metadata.title,
+        title: "Shuhrat's Blog",
     };
 
     const feed = new Feed(feedOptions as any);

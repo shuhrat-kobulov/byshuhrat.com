@@ -1,4 +1,77 @@
 import Link from './Link';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: "Shuhrat's Blog",
+    description: 'Personal blog by Shuhrat Kobulov.',
+    keywords: [
+        'Shuhrat Kobulov',
+        'Software Engineer',
+        'Web Development',
+        'React',
+        'TypeScript',
+        'Next.js',
+        'Programming Blog',
+        'Technical Writing',
+        'Uzbek Developer',
+        'Frontend Development',
+    ],
+    authors: [{ name: 'Shuhrat Kobulov', url: 'https://byshuhrat.com' }],
+    creator: 'Shuhrat Kobulov',
+    publisher: 'Shuhrat Kobulov',
+    openGraph: {
+        type: 'website',
+        locale: 'en_US',
+        url: 'https://byshuhrat.com',
+        siteName: "Shuhrat's Blog",
+        title: "Shuhrat's Blog",
+        description: 'Personal blog by Shuhrat Kobulov.',
+        images: [
+            {
+                url: 'https://byshuhrat.com/opengraph-image',
+                width: 1200,
+                height: 630,
+                alt: "Shuhrat's Blog - Software Engineer",
+            },
+        ],
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: "Shuhrat's Blog",
+        description: 'Personal blog by Shuhrat Kobulov.',
+        images: ['https://byshuhrat.com/opengraph-image'],
+        creator: '@shuhrat_kobulov',
+        site: '@shuhrat_kobulov',
+    },
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            'max-video-preview': -1,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
+        },
+    },
+    alternates: {
+        canonical: 'https://byshuhrat.com',
+        languages: {
+            'en-US': 'https://byshuhrat.com',
+            'uz-UZ': 'https://byshuhrat.com',
+        },
+        types: {
+            'application/rss+xml': 'https://byshuhrat.com/rss.xml',
+            'application/atom+xml': 'https://byshuhrat.com/atom.xml',
+        },
+    },
+    category: 'Technology',
+    classification: 'Personal Blog',
+    other: {
+        'google-site-verification':
+            'id5xjzE56P-10nCumUy2HOi0jIxl1L6QOwdW5MUqvsc', // Add your actual verification code later
+    },
+};
 
 export default async function Home() {
     return (

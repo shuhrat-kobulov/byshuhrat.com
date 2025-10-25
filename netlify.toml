@@ -1,0 +1,33 @@
+# Netlify configuration file
+
+[build]
+  publish = "out"
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "22.8.0"
+
+# Redirect rules
+[[redirects]]
+  from = "https://www.byshuhrat.com/*"
+  to = "https://byshuhrat.com/:splat"
+  status = 301
+  force = true
+
+# Headers for better performance
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    cache-control = "public,max-age=31536000,immutable"
+
+[[headers]]
+  for = "/og-image"
+  [headers.values]
+    content-type = "image/png"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

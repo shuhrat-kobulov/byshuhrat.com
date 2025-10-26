@@ -32,37 +32,7 @@ export async function generateHomeImage() {
                     gap: 80,
                 }}
             >
-                <span
-                    style={{
-                        backgroundImage:
-                            'linear-gradient(45deg, #ffb3d8, #cbb6ff)',
-                        backgroundClip: 'text',
-                        WebkitBackgroundClip: 'text',
-                        color: 'transparent',
-                    }}
-                >
-                    Shuhrat's Blog
-                </span>
-                <span
-                    style={{
-                        fontFamily: 'Merriweather',
-                        fontStyle: 'italic',
-                        fontSize: 60,
-                        alignItems: 'center',
-                    }}
-                >
-                    by
-                    <img
-                        alt="Shuhrat Kobulov"
-                        src="https://github.com/shuhrat-kobulov.png"
-                        style={{
-                            height: 120,
-                            width: 120,
-                            borderRadius: '50%',
-                            marginLeft: 20,
-                        }}
-                    />
-                </span>
+                Shuhrat's Blog
             </div>
         </div>
     );
@@ -86,42 +56,16 @@ export async function generatePostImage({ title }) {
                     display: 'flex',
                     fontSize: 40,
                     width: '100%',
-                    justifyContent: 'space-between',
                     alignItems: 'center',
                     paddingBottom: 20,
                 }}
             >
                 <span
                     style={{
-                        backgroundImage:
-                            'linear-gradient(45deg, #ffb3d8, #cbb6ff)',
-                        backgroundClip: 'text',
-                        WebkitBackgroundClip: 'text',
-                        color: 'transparent',
                         fontSize: 60,
                     }}
                 >
                     Shuhrat's Blog
-                </span>
-                <span
-                    style={{
-                        fontFamily: 'Merriweather',
-                        fontStyle: 'italic',
-                        fontSize: 35,
-                        alignItems: 'center',
-                    }}
-                >
-                    by
-                    <img
-                        alt="Shuhrat Kobulov"
-                        src="https://github.com/shuhrat-kobulov.png"
-                        style={{
-                            height: 80,
-                            width: 80,
-                            borderRadius: '50%',
-                            marginLeft: 20,
-                        }}
-                    />
                 </span>
             </div>
             <div

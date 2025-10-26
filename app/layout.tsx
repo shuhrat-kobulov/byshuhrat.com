@@ -1,6 +1,4 @@
 import PlausibleProvider from 'next-plausible';
-import Link from './Link';
-import HomeLink from './HomeLink';
 import { sans } from './fonts';
 import './global.css';
 import { Header } from './Header';

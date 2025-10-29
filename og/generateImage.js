@@ -30,6 +30,7 @@ export async function generateHomeImage() {
                     justifyContent: 'center',
                     alignItems: 'center',
                     gap: 80,
+                    textAlign: 'center',
                 }}
             >
                 Shuhrat's Blog

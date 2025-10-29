@@ -18,6 +18,10 @@ export async function generateHomeImage() {
                 height: '100%',
                 backgroundColor: 'rgb(40, 44, 53)',
                 color: 'white',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: '60px',
             }}
         >
             <div
@@ -30,7 +34,6 @@ export async function generateHomeImage() {
                     justifyContent: 'center',
                     alignItems: 'center',
                     gap: 80,
-                    textAlign: 'center',
                 }}
             >
                 Shuhrat's Blog

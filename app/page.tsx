@@ -28,7 +28,7 @@ export const metadata: Metadata = {
         description: 'Personal blog by Shuhrat Kobulov.',
         images: [
             {
-                url: `https://byshuhrat.com/opengraph-image?v=${Date.now()}`,
+                url: 'https://byshuhrat.com/opengraph-image',
                 width: 1200,
                 height: 630,
                 alt: "Shuhrat's Blog - Software Engineer",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         title: "Shuhrat's Blog",
         description: 'Personal blog by Shuhrat Kobulov.',
-        images: [`https://byshuhrat.com/opengraph-image?v=${Date.now()}`],
+        images: ['https://byshuhrat.com/opengraph-image'],
         creator: '@shuhrat_kobulov',
         site: '@shuhrat_kobulov',
     },

@@ -27,6 +27,15 @@ export const Header = () => {
                             Blog
                         </Link>
                     </li>
+                    <li>
+                        <Link
+                            className="font-bold text-amber-900 text-sm md:text-base"
+                            href="/Shuhrat_Kobulov_CV.pdf"
+                            title="Blog - Articles and Updates"
+                        >
+                            CV
+                        </Link>
+                    </li>
                 </ul>
             </nav>
         </header>

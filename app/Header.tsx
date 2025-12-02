@@ -11,11 +11,11 @@ export const Header = () => {
                     <li>
                         <Link
                             className="font-bold text-[#e85a4f] text-sm md:text-base"
-                            href="https://pomodo.uz"
+                            href="https://getpomodo.com"
                             target="_blank"
                             title="Pomodo - Productivity & Task Management App"
                         >
-                            Pomodo.uz
+                            Pomodo.com
                         </Link>
                     </li>
                     <li>
@@ -31,7 +31,7 @@ export const Header = () => {
                         <Link
                             className="font-bold text-amber-900 text-sm md:text-base"
                             href="/Shuhrat_Kobulov_CV.pdf"
-                            title="Blog - Articles and Updates"
+                            title="CV - Shuhrat Kobulov"
                         >
                             CV
                         </Link>

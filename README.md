@@ -1,13 +1,13 @@
 # Shuhrat's Blog
 
-## 🚀 Live Demo
+## Live Demo
 
 Visit the blog: [byshuhrat.com](https://byshuhrat.com)
 
-## 📁 Project Structure
+## Project Structure
 
 ```
-├── app/                    # Next.js App Router
+├── app/                   # Next.js App Router
 │   ├── [slug]/            # Dynamic blog post pages
 │   ├── posts/             # Blog posts listing
 │   ├── fonts.ts           # Font configuration
@@ -21,7 +21,7 @@ Visit the blog: [byshuhrat.com](https://byshuhrat.com)
 └── README.md              # This file
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -64,7 +64,7 @@ npm run build
 npm run start
 ```
 
-## 📝 Writing Content
+## Writing Content
 
 ### Creating a New Post
 
@@ -88,7 +88,7 @@ npm run start
 
 3. The post will automatically appear in your blog!
 
-## 🤝 Contributing
+## Contributing
 
 While this is a personal blog, I welcome:
 

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Private exam preparation page - not to be indexed
+Disallow: /exam-notes

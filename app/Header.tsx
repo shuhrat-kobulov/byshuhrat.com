@@ -15,7 +15,7 @@ export const Header = () => {
                             target="_blank"
                             title="Pomodo - Productivity & Task Management App"
                         >
-                            Pomodo.com
+                            Pomodo
                         </Link>
                     </li>
                     <li>

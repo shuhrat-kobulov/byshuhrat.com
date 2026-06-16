@@ -3,7 +3,6 @@ import { readdir } from 'fs/promises';
 import matter from 'gray-matter';
 import { size, contentType, generatePostImage } from '../../og/generateImage';
 
-export const dynamic = 'force-static';
 export const alt = "Shuhrat's Blog";
 export { size, contentType };
 

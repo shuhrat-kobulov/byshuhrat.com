@@ -1,14 +1,5 @@
-import { readdir } from 'fs/promises';
-
 export default function Layout({ children }: { children: React.ReactNode }) {
-    return <div className="max-w-2xl mx-auto">{children}</div>;
-}
-
-export async function generateStaticParams() {
-    const entries = await readdir('./public/', { withFileTypes: true });
-    const dirs = entries
-        .filter((entry) => entry.isDirectory())
-        .filter((entry) => !entry.name.startsWith('_'))
-        .map((entry) => entry.name);
-    return dirs.map((dir) => ({ slug: dir }));
+    // Left-aligned rather than centred so the article shares the same left
+    // edge as the header, the home page and the footer.
+    return <div className="max-w-2xl">{children}</div>;
 }

@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
 
-# Private exam preparation page - not to be indexed
-Disallow: /exam-notes
+Sitemap: https://byshuhrat.com/sitemap.xml

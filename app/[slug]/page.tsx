@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
-import { readdir, readFile } from 'fs/promises';
-import matter from 'gray-matter';
+import { readFile } from 'fs/promises';
+import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote-client/rsc';
 import Link from '../Link';
 import { sans } from '../fonts';
@@ -12,8 +12,18 @@ import { remarkMdxEvalCodeBlock } from './mdx';
 import overnight from 'overnight/themes/Overnight-Slumber.json';
 import './markdown.css';
 import remarkGfm from 'remark-gfm';
+import { getPost, getPostSlugs } from '../posts';
+import { formatDate } from '../PostList';
+import { site } from '../data';
+import { ArrowRightIcon } from '../icons';
 
 overnight.colors['editor.background'] = 'var(--code-bg)';
+
+/** Rough reading time, at the usual 200 words-per-minute yardstick. */
+function readingTime(content: string) {
+    const words = content.trim().split(/\s+/).length;
+    return Math.max(1, Math.round(words / 200));
+}
 
 export default async function PostPage({
     params,
@@ -21,169 +31,206 @@ export default async function PostPage({
     params: Promise<{ slug: string }>;
 }) {
     const { slug } = await params;
+    const post = await getPost(slug);
+
+    if (!post) {
+        notFound();
+    }
+
+    const { content, data } = post;
     const filename = './public/' + slug + '/index.md';
 
+    let postComponents: any = {};
     try {
-        const file = await readFile(filename, 'utf8');
-        let postComponents: any = {};
-        try {
-            postComponents = await import(
-                '../../public/' + slug + '/components.js'
-            );
-        } catch (e: any) {
-            if (!e || e.code !== 'MODULE_NOT_FOUND') {
-                throw e;
-            }
+        postComponents = await import('../../public/' + slug + '/components.js');
+    } catch (e: any) {
+        if (!e || e.code !== 'MODULE_NOT_FOUND') {
+            throw e;
         }
-        let Wrapper = postComponents.Wrapper ?? Fragment;
-        const { content, data } = matter(file);
+    }
+    const Wrapper = postComponents.Wrapper ?? Fragment;
 
-        return (
-            <>
-                <article>
-                    <h1
-                        className={[
-                            sans.className,
-                            'text-[40px] font-black leading-[44px] text-[--title]',
-                        ].join(' ')}
-                    >
-                        {data.title}
-                    </h1>
-                    <p className="mt-2 text-[13px]">
-                        {new Date(data.date).toLocaleDateString('en', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric',
-                        })}
-                    </p>
-                    <div className="markdown mt-4">
-                        <Wrapper>
-                            <MDXRemote
-                                source={content}
-                                components={{
-                                    a: Link,
-                                    img: async ({ src, ...rest }) => {
-                                        if (
-                                            src &&
-                                            !/^https?:\/\//.test(src) &&
-                                            src.endsWith('.svg')
-                                        ) {
-                                            const svgPath = `./public/${slug}/${src}`;
-                                            const svgContent = await readFile(
-                                                svgPath,
-                                                'utf8'
-                                            );
-                                            const maxWidth = src.endsWith(
-                                                '-full.svg'
-                                            )
-                                                ? '100%'
-                                                : '450px';
-                                            const colorReplacedSvg = svgContent
-                                                .replace(
-                                                    /#ffffff/gi,
-                                                    'var(--bg-rotated)'
-                                                )
-                                                .replace(
-                                                    /<metadata>[\s\S]*?<\/metadata>/,
-                                                    ''
-                                                )
-                                                .replace(
-                                                    '<svg',
-                                                    `<svg style="max-width: ${maxWidth}; width: 100%; height: auto;"`
-                                                );
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: data.title,
+        description: data.spoiler,
+        datePublished: data.date,
+        dateModified: data.date,
+        author: {
+            '@type': 'Person',
+            name: site.author,
+            url: site.url,
+        },
+        publisher: {
+            '@type': 'Person',
+            name: site.author,
+            url: site.url,
+        },
+        mainEntityOfPage: `${site.url}/${slug}/`,
+        url: `${site.url}/${slug}/`,
+    };
 
-                                            return (
-                                                <span
-                                                    dangerouslySetInnerHTML={{
-                                                        __html: colorReplacedSvg,
-                                                    }}
-                                                    style={{
-                                                        filter: 'var(--svg-filter)',
-                                                        display: 'inline-block',
-                                                        ...rest.style,
-                                                    }}
-                                                    {...rest}
-                                                />
-                                            );
-                                        }
+    return (
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
 
-                                        let finalSrc = src;
-                                        if (src && !/^https?:\/\//.test(src)) {
-                                            finalSrc = `/${slug}/${src}`;
-                                        }
+            <Link
+                href="/posts/"
+                className="mb-8 inline-flex items-center gap-1.5 text-sm font-semibold text-muted transition-colors hover:text-title"
+            >
+                <ArrowRightIcon size={15} className="rotate-180" />
+                All writing
+            </Link>
 
-                                        return <img src={finalSrc} {...rest} />;
-                                    },
-                                    Video: ({ src, ...rest }) => {
-                                        let finalSrc = src;
-                                        if (src && !/^https?:\/\//.test(src)) {
-                                            finalSrc = `/${slug}/${src}`;
-                                        }
-                                        return (
-                                            <video src={finalSrc} {...rest} />
-                                        );
-                                    },
-                                    ...postComponents,
-                                }}
-                                options={{
-                                    mdxOptions: {
-                                        useDynamicImport: true,
-                                        remarkPlugins: [
-                                            remarkSmartpants,
-                                            remarkGfm,
-                                            [remarkMdxEvalCodeBlock, filename],
-                                        ] as any,
-                                        rehypePlugins: [
-                                            [
-                                                rehypePrettyCode,
-                                                {
-                                                    theme: overnight,
-                                                },
-                                            ],
-                                            [rehypeSlug],
-                                            [
-                                                rehypeAutolinkHeadings,
-                                                {
-                                                    behavior: 'wrap',
-                                                    properties: {
-                                                        className:
-                                                            'linked-heading',
-                                                        target: '_self',
-                                                    },
-                                                },
-                                            ],
-                                        ] as any,
-                                    } as any,
-                                }}
-                            />
-                        </Wrapper>
-                        <hr />
-                    </div>
-                </article>
-            </>
-        );
-    } catch (error) {
-        // If file doesn't exist, return not found
-        return (
-            <article className="markdown">
-                <h1 className="text-[40px] font-black leading-[44px] text-[--title]">
-                    Sahifa topilmadi
+            <article>
+                <h1
+                    className={[
+                        sans.className,
+                        'text-[40px] font-black leading-[44px] text-title',
+                    ].join(' ')}
+                >
+                    {data.title}
                 </h1>
-                <div className="markdown mt-10">
-                    <p>Bu post mavjud emas.</p>
+                <p className="mt-3 text-[13px] text-muted">
+                    <time dateTime={data.date}>{formatDate(data.date)}</time>
+                    <span aria-hidden="true"> · </span>
+                    {readingTime(content)} min read
+                </p>
+
+                <div className="markdown mt-8">
+                    <Wrapper>
+                        <MDXRemote
+                            source={content}
+                            components={{
+                                a: Link,
+                                img: async ({ src, ...rest }) => {
+                                    if (
+                                        src &&
+                                        !/^https?:\/\//.test(src) &&
+                                        src.endsWith('.svg')
+                                    ) {
+                                        const svgPath = `./public/${slug}/${src}`;
+                                        const svgContent = await readFile(
+                                            svgPath,
+                                            'utf8'
+                                        );
+                                        const maxWidth = src.endsWith(
+                                            '-full.svg'
+                                        )
+                                            ? '100%'
+                                            : '450px';
+                                        const colorReplacedSvg = svgContent
+                                            .replace(
+                                                /#ffffff/gi,
+                                                'var(--bg-rotated)'
+                                            )
+                                            .replace(
+                                                /<metadata>[\s\S]*?<\/metadata>/,
+                                                ''
+                                            )
+                                            .replace(
+                                                '<svg',
+                                                `<svg style="max-width: ${maxWidth}; width: 100%; height: auto;"`
+                                            );
+
+                                        return (
+                                            <span
+                                                dangerouslySetInnerHTML={{
+                                                    __html: colorReplacedSvg,
+                                                }}
+                                                style={{
+                                                    filter: 'var(--svg-filter)',
+                                                    display: 'inline-block',
+                                                    ...rest.style,
+                                                }}
+                                                {...rest}
+                                            />
+                                        );
+                                    }
+
+                                    let finalSrc = src;
+                                    if (src && !/^https?:\/\//.test(src)) {
+                                        finalSrc = `/${slug}/${src}`;
+                                    }
+
+                                    // Empty alt first so images written
+                                    // without one are announced as decorative
+                                    // rather than read out as a filename.
+                                    return <img alt="" src={finalSrc} {...rest} />;
+                                },
+                                Video: ({ src, ...rest }) => {
+                                    let finalSrc = src;
+                                    if (src && !/^https?:\/\//.test(src)) {
+                                        finalSrc = `/${slug}/${src}`;
+                                    }
+                                    return <video src={finalSrc} {...rest} />;
+                                },
+                                ...postComponents,
+                            }}
+                            options={{
+                                mdxOptions: {
+                                    useDynamicImport: true,
+                                    remarkPlugins: [
+                                        remarkSmartpants,
+                                        remarkGfm,
+                                        [remarkMdxEvalCodeBlock, filename],
+                                    ] as any,
+                                    rehypePlugins: [
+                                        [
+                                            rehypePrettyCode,
+                                            {
+                                                theme: overnight,
+                                            },
+                                        ],
+                                        [rehypeSlug],
+                                        [
+                                            rehypeAutolinkHeadings,
+                                            {
+                                                behavior: 'wrap',
+                                                properties: {
+                                                    className: 'linked-heading',
+                                                    target: '_self',
+                                                },
+                                            },
+                                        ],
+                                    ] as any,
+                                } as any,
+                            }}
+                        />
+                    </Wrapper>
                 </div>
             </article>
-        );
-    }
+
+            <footer className="mt-12 border-t border-line pt-8">
+                <p className="text-sm text-muted">
+                    Written by{' '}
+                    <Link
+                        href="/"
+                        className="font-semibold text-link transition-colors hover:text-link-hover"
+                    >
+                        {site.author}
+                    </Link>
+                    , {site.role}. Questions or corrections are welcome at{' '}
+                    <Link
+                        href={`mailto:${site.email}`}
+                        className="text-link transition-colors hover:text-link-hover"
+                    >
+                        {site.email}
+                    </Link>
+                    .
+                </p>
+            </footer>
+        </>
+    );
 }
 
 export async function generateStaticParams() {
-    const entries = await readdir('./public/', { withFileTypes: true });
-    const dirs = entries
-        .filter((entry) => entry.isDirectory())
-        .filter((entry) => !entry.name.startsWith('_')) // Exclude _headers, _redirects etc
-        .map((entry) => entry.name);
-    return dirs.map((dir) => ({ slug: dir }));
+    const slugs = await getPostSlugs();
+    return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -192,27 +239,42 @@ export async function generateMetadata({
     params: Promise<{ slug: string }>;
 }) {
     const { slug } = await params;
-    const file = await readFile('./public/' + slug + '/index.md', 'utf8');
-    let { data } = matter(file);
+    const post = await getPost(slug);
+
+    if (!post) {
+        return { title: `Not found — ${site.name}` };
+    }
+
+    const { data } = post;
 
     return {
-        title: data.title + " — Shuhrat's Blog",
+        title: `${data.title} — ${site.name}`,
         description: data.spoiler,
+        authors: [{ name: site.author, url: site.url }],
         openGraph: {
             title: data.title,
             description: data.spoiler,
             type: 'article',
             publishedTime: data.date,
-            authors: ['Shuhrat Kobulov'],
-            url: `https://byshuhrat.com/${slug}/`,
+            authors: [site.author],
+            url: `${site.url}/${slug}/`,
+            images: [
+                {
+                    url: `/${slug}/opengraph-image`,
+                    width: 1200,
+                    height: 630,
+                    alt: data.title,
+                },
+            ],
         },
         twitter: {
             card: 'summary_large_image',
             title: data.title,
             description: data.spoiler,
+            images: [`/${slug}/opengraph-image`],
         },
         alternates: {
-            canonical: `https://byshuhrat.com/${slug}/`,
+            canonical: `${site.url}/${slug}/`,
         },
     };
 }

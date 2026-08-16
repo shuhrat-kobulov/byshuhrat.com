@@ -12,7 +12,7 @@ import { remarkMdxEvalCodeBlock } from './mdx';
 import overnight from 'overnight/themes/Overnight-Slumber.json';
 import './markdown.css';
 import remarkGfm from 'remark-gfm';
-import { getPost, getPostSlugs } from '../posts';
+import { getPost, getPostSlugs, DEFAULT_LANG, toOgLocale } from '../posts';
 import { formatDate } from '../PostList';
 import { site } from '../data';
 import { ArrowRightIcon } from '../icons';
@@ -50,6 +50,8 @@ export default async function PostPage({
     }
     const Wrapper = postComponents.Wrapper ?? Fragment;
 
+    const lang = data.lang ?? DEFAULT_LANG;
+
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'BlogPosting',
@@ -57,6 +59,10 @@ export default async function PostPage({
         description: data.spoiler,
         datePublished: data.date,
         dateModified: data.date,
+        inLanguage: lang,
+        // The generated card doubles as the article image; without one Google
+        // won't consider the page for an article rich result at all.
+        image: [`${site.url}/${slug}/opengraph-image`],
         author: {
             '@type': 'Person',
             name: site.author,
@@ -71,11 +77,38 @@ export default async function PostPage({
         url: `${site.url}/${slug}/`,
     };
 
+    const breadcrumbJsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Home',
+                item: `${site.url}/`,
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Writing',
+                item: `${site.url}/posts/`,
+            },
+            {
+                '@type': 'ListItem',
+                position: 3,
+                name: data.title,
+                item: `${site.url}/${slug}/`,
+            },
+        ],
+    };
+
     return (
         <>
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify([jsonLd, breadcrumbJsonLd]),
+                }}
             />
 
             <Link
@@ -86,7 +119,9 @@ export default async function PostPage({
                 All writing
             </Link>
 
-            <article>
+            {/* The root layout is the only place that can set <html lang>, so a
+                post in another language marks up its own subtree instead. */}
+            <article lang={lang}>
                 <h1
                     className={[
                         sans.className,
@@ -96,7 +131,9 @@ export default async function PostPage({
                     {data.title}
                 </h1>
                 <p className="mt-3 text-[13px] text-muted">
-                    <time dateTime={data.date}>{formatDate(data.date)}</time>
+                    <time dateTime={data.date}>
+                        {formatDate(data.date, lang)}
+                    </time>
                     <span aria-hidden="true"> · </span>
                     {readingTime(content)} min read
                 </p>
@@ -246,6 +283,7 @@ export async function generateMetadata({
     }
 
     const { data } = post;
+    const lang = data.lang ?? DEFAULT_LANG;
 
     return {
         title: `${data.title} — ${site.name}`,
@@ -255,6 +293,7 @@ export async function generateMetadata({
             title: data.title,
             description: data.spoiler,
             type: 'article',
+            locale: toOgLocale(lang),
             publishedTime: data.date,
             authors: [site.author],
             url: `${site.url}/${slug}/`,

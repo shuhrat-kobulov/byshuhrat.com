@@ -2,8 +2,12 @@ import Link from './Link';
 import { Post } from './posts';
 import { sans } from './fonts';
 
-export function formatDate(date: string) {
-    return new Date(date).toLocaleDateString('en', {
+/**
+ * Post lists stay in the site's language; an article header passes its own so
+ * the date doesn't read as English inside a non-English `lang` subtree.
+ */
+export function formatDate(date: string, locale = 'en') {
+    return new Date(date).toLocaleDateString(locale, {
         day: 'numeric',
         month: 'long',
         year: 'numeric',

@@ -205,17 +205,14 @@ export default async function Home() {
 function Hero({ years }: { years: number }) {
     return (
         <section>
-            <h1
-                className={[
-                    sans.className,
-                    'text-5xl font-black text-title',
-                ].join(' ')}
-            >
-                Hello.
+            {/* Both lines live inside the h1 so the page's strongest heading
+                carries the name, not just the greeting. */}
+            <h1 className={[sans.className, 'text-title'].join(' ')}>
+                <span className="block text-5xl font-black">Hello.</span>
+                <span className="my-5 block text-2xl font-bold">
+                    My name is {site.author}.
+                </span>
             </h1>
-            <p className="my-5 text-2xl font-bold text-title">
-                My name is Shuhrat Kobulov.
-            </p>
 
             <p className="mb-6 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold uppercase tracking-wider text-muted">
                 <span className="text-accent">{site.role}</span>

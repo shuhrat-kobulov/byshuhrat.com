@@ -49,6 +49,25 @@
     content-type = "application/atom+xml; charset=utf-8"
     cache-control = "public,max-age=3600"
 
+# Post sources live in /public, so the export copies the raw markdown in
+# beside the rendered page. Keep that duplicate out of the index.
+[[headers]]
+  for = "/:slug/index.md"
+  [headers.values]
+    X-Robots-Tag = "noindex"
+
+# Next writes an RSC payload next to every page for client-side navigation.
+# Useful to the router, not to search engines.
+[[headers]]
+  for = "/index.txt"
+  [headers.values]
+    X-Robots-Tag = "noindex"
+
+[[headers]]
+  for = "/:slug/index.txt"
+  [headers.values]
+    X-Robots-Tag = "noindex"
+
 [[headers]]
   for = "/*"
   [headers.values]

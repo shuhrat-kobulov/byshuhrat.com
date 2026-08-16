@@ -1,6 +1,7 @@
 ---
 title: 'Shaxsiy blog saytim'
 date: '2025-10-25'
+lang: 'uz'
 spoiler: 'Nega blog sayt yaratdim va nima maqsadda yozaman?'
 ---
 

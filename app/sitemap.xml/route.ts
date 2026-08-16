@@ -3,16 +3,26 @@ import { site } from '../data';
 
 export const dynamic = 'force-static';
 
+const day = (date: string | number | Date) =>
+    new Date(date).toISOString().split('T')[0];
+
 export async function GET() {
     const posts = await getPosts();
-    const today = new Date().toISOString().split('T')[0];
+
+    /**
+     * Both listing pages are driven by the newest post, so that is their real
+     * last-modified date. Stamping them with the build date instead moved them
+     * on every deploy, and Google stops trusting a `lastmod` that always
+     * changes.
+     */
+    const newest = posts.length > 0 ? day(posts[0].date) : day(Date.now());
 
     const urls = [
-        { loc: `${site.url}/`, lastmod: today, priority: '1.0' },
-        { loc: `${site.url}/posts/`, lastmod: today, priority: '0.8' },
+        { loc: `${site.url}/`, lastmod: newest, priority: '1.0' },
+        { loc: `${site.url}/posts/`, lastmod: newest, priority: '0.8' },
         ...posts.map((post) => ({
             loc: `${site.url}/${post.slug}/`,
-            lastmod: new Date(post.date).toISOString().split('T')[0],
+            lastmod: day(post.date),
             priority: '0.7',
         })),
     ];

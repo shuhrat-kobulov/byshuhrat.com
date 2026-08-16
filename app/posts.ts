@@ -11,8 +11,30 @@ export interface Post {
     title: string;
     date: string;
     spoiler: string;
+    /**
+     * BCP 47 tag for the post body, when it isn't the site default. The site
+     * chrome is English, so an Uzbek post must say so or search engines and
+     * screen readers both read it as English.
+     */
+    lang?: string;
     youtube?: string;
     bluesky?: string;
+}
+
+/** Site default, used whenever a post declares no `lang` of its own. */
+export const DEFAULT_LANG = 'en';
+
+/** og:locale insists on a region, which a bare `uz` or `en` doesn't carry. */
+const OG_LOCALES: Record<string, string> = {
+    en: 'en_US',
+    uz: 'uz_UZ',
+    ru: 'ru_RU',
+};
+
+export function toOgLocale(lang: string) {
+    const [base, region] = lang.split('-');
+    if (region) return `${base}_${region.toUpperCase()}`;
+    return OG_LOCALES[base] ?? `${base}_${base.toUpperCase()}`;
 }
 
 /**

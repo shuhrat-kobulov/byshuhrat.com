@@ -25,6 +25,8 @@ on Netlify.
 │   ├── Section.tsx        # Section heading + chip primitives
 │   ├── PostList.tsx       # Shared post list (home + index)
 │   ├── fonts.ts           # Montserrat (500/600/700/900)
+│   ├── manifest.ts        # Web app manifest
+│   ├── icon.png           # Favicon (512²) + apple-icon.png (180²)
 │   └── global.css         # Theme tokens + base styles
 ├── public/                # Static content
 │   ├── [post-slug]/       # One directory per post
@@ -69,6 +71,11 @@ npm run build        # static export to ./out
 
     Your content here...
     ```
+
+    Posts default to English. One that isn't must say so with a `lang` tag —
+    `lang: 'uz'` — which marks up the article, its `og:locale`, its structured
+    data and the date format. Without it search engines read the post as
+    English.
 
 The post is picked up automatically by the post index, the home page, both
 feeds, the sitemap and its own Open Graph card. Directories without an

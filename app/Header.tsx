@@ -8,12 +8,6 @@ import { sans } from './fonts';
 import { site } from './data';
 
 const nav = [
-    {
-        label: 'Pomodo',
-        href: 'https://getpomodo.com',
-        title: 'Pomodo — productivity & task management app',
-        external: true,
-    },
     { label: 'Blog', href: '/posts/', title: 'Articles and notes' },
     {
         label: 'CV',
@@ -78,11 +72,9 @@ export const Header = () => {
                                         }
                                         className={[
                                             'whitespace-nowrap text-xs font-bold transition-colors sm:text-sm md:text-base',
-                                            item.label === 'Pomodo'
-                                                ? 'text-pomodo hover:text-pomodo-hover'
-                                                : isActive
-                                                  ? 'text-title'
-                                                  : 'text-muted hover:text-title',
+                                            isActive
+                                                ? 'text-title'
+                                                : 'text-muted hover:text-title',
                                         ].join(' ')}
                                     >
                                         {item.label}

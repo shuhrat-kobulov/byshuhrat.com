@@ -4,6 +4,7 @@ import { sans } from './fonts';
 import './global.css';
 import { Header } from './Header';
 import { Footer } from './Footer';
+import { GoogleAnalytics } from './GoogleAnalytics';
 import { site, socials } from './data';
 
 export const metadata: Metadata = {
@@ -97,6 +98,7 @@ export default function RootLayout({
                         <Footer />
                     </div>
                 </PlausibleProvider>
+                <GoogleAnalytics />
             </body>
         </html>
     );

@@ -1,31 +1,45 @@
 import { sans } from './fonts';
 import Link from './Link';
-import './[slug]/markdown.css';
+import { ArrowRightIcon } from './icons';
+
+export const metadata = {
+    title: 'Page not found',
+    robots: { index: false, follow: true },
+};
 
 export default function NotFound() {
     return (
-        <article className="markdown">
+        <div className="max-w-2xl py-10">
+            <p className="font-mono text-sm font-bold uppercase tracking-[0.2em] text-accent">
+                404
+            </p>
             <h1
                 className={[
                     sans.className,
-                    'text-[40px] font-black leading-[44px] text-[--title]',
+                    'mt-3 text-[40px] font-black leading-[44px] text-title',
                 ].join(' ')}
             >
-                Not found
+                This page doesn&rsquo;t exist
             </h1>
-            <div className="markdown mt-10">
-                <p>This page doesn't exist</p>
-                <p>
-                    Back to Home page{' '}
-                    <Link
-                        href="/"
-                        className="text-blue-500 hover:text-blue-700"
-                    >
-                        click
-                    </Link>
-                    .
-                </p>
+            <p className="mt-4 text-muted">
+                The link may be outdated, or the page has moved.
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+                <Link
+                    href="/"
+                    className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-bold text-on-accent transition-transform hover:-translate-y-0.5"
+                >
+                    Go home
+                    <ArrowRightIcon size={16} />
+                </Link>
+                <Link
+                    href="/posts/"
+                    className="inline-flex items-center gap-2 rounded-full border border-line px-5 py-2.5 text-sm font-bold text-title transition-colors hover:border-line-strong hover:bg-subtle"
+                >
+                    Browse writing
+                </Link>
             </div>
-        </article>
+        </div>
     );
 }

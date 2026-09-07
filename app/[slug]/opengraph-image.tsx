@@ -1,24 +1,21 @@
-import { readFile } from 'node:fs/promises';
-import { readdir } from 'fs/promises';
-import matter from 'gray-matter';
 import { size, contentType, generatePostImage } from '../../og/generateImage';
+import { getPost, getPostSlugs } from '../posts';
 
+export const dynamic = 'force-static';
 export const alt = "Shuhrat's Blog";
 export { size, contentType };
 
-export default async function Image({ params }) {
+export default async function Image({
+    params,
+}: {
+    params: Promise<{ slug: string }>;
+}) {
     const { slug } = await params;
-    const filename = './public/' + slug + '/index.md';
-    const file = await readFile(filename, 'utf8');
-    const { data } = matter(file);
-    return generatePostImage({ title: data.title });
+    const post = await getPost(slug);
+    return generatePostImage({ title: post?.data.title ?? "Shuhrat's Blog" });
 }
 
 export async function generateStaticParams() {
-    const entries = await readdir('./public/', { withFileTypes: true });
-    const dirs = entries
-        .filter((entry) => entry.isDirectory())
-        .filter((entry) => !entry.name.startsWith('_'))
-        .map((entry) => entry.name);
-    return dirs.map((dir) => ({ slug: dir }));
+    const slugs = await getPostSlugs();
+    return slugs.map((slug) => ({ slug }));
 }

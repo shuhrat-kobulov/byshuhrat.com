@@ -2,18 +2,141 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---------------------------------------------------------------------------
+   Theme tokens.
+
+   Everything is themed through custom properties, never through Tailwind's
+   `dark:` variant, so the correct palette applies even before (or without)
+   JavaScript. The inline script in layout.tsx resolves the stored preference
+   to an explicit `data-theme` on <html>; the media query below is the
+   no-JS fallback.
+--------------------------------------------------------------------------- */
+
 :root {
-    --text: #222;
-    --title: #222;
+    color-scheme: light;
+
     --bg: #faf5ee;
+    --bg-texture: url('/bg-img.png');
+    --bg-elevated: #fffdf8;
+    --bg-subtle: #f2ebdf;
+    --border: #e5dbca;
+    --border-strong: #cfc2ab;
+
+    --text: #33302b;
+    --text-muted: #6f675b;
+    --title: #1b1a17;
+
+    --link: #c62a5f;
+    --link-hover: #9d1f4a;
+    --accent: #c62a5f;
+    --accent-soft: rgba(198, 42, 95, 0.09);
+    /* Text drawn on top of --accent. Flips in dark mode, where the accent is
+       a pale pink that white text cannot sit on legibly. */
+    --on-accent: #ffffff;
+    /* Pomodo's brand red, darkened for the cream background: the brand tone
+       itself only reaches 3.2:1, which fails AA at nav text sizes. */
+    --pomodo: #c4402f;
+    --pomodo-hover: #a52c1d;
+
     --code-bg: #232936;
-    --link: #d23669;
-    --inlineCode-bg: rgba(255, 229, 100, 0.2);
+    --inlineCode-bg: rgba(255, 214, 82, 0.3);
     --inlineCode-text: #1a1a1a;
+
     --pink: lab(63 59.32 -1.47);
     --purple: lab(33 42.09 -43.19);
+
     --svg-filter: none;
+    --bg-rotated: white;
+    --rule-opacity: 0.5;
+    --tip-brightness: 1;
+
+    --shadow-sm: 0 1px 2px rgba(27, 26, 23, 0.06);
+    --shadow-md: 0 6px 24px -10px rgba(27, 26, 23, 0.25);
+
+    --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas,
+        'Liberation Mono', monospace;
 }
+
+/* Dark palette — applied when the user (or their system) asks for it. */
+:root[data-theme='dark'] {
+    color-scheme: dark;
+
+    --bg: #14151a;
+    --bg-texture: radial-gradient(
+        900px 480px at 50% -12%,
+        rgba(255, 134, 173, 0.07),
+        transparent 70%
+    );
+    --bg-elevated: #1b1d24;
+    --bg-subtle: #1f212a;
+    --border: #2c2f39;
+    --border-strong: #3d4150;
+
+    --text: rgba(233, 234, 240, 0.87);
+    --text-muted: rgba(233, 234, 240, 0.55);
+    --title: #f3f4f8;
+
+    --link: #ff86ad;
+    --link-hover: #ffa8c4;
+    --accent: #ff86ad;
+    --accent-soft: rgba(255, 134, 173, 0.12);
+    --on-accent: #14151a;
+    --pomodo: #e85a4f;
+    --pomodo-hover: #ff7a6a;
+
+    --code-bg: #10121a;
+    --inlineCode-bg: rgba(146, 161, 209, 0.16);
+    --inlineCode-text: #e3e6f0;
+
+    --bg-rotated: rgb(221, 225, 236);
+    --rule-opacity: 0.12;
+    --tip-brightness: 0.46;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 6px 24px -10px rgba(0, 0, 0, 0.7);
+}
+
+@media (prefers-color-scheme: dark) {
+    /* Same values as above, for visitors before the theme script runs. */
+    :root:not([data-theme='light']) {
+        color-scheme: dark;
+
+        --bg: #14151a;
+        --bg-texture: radial-gradient(
+            900px 480px at 50% -12%,
+            rgba(255, 134, 173, 0.07),
+            transparent 70%
+        );
+        --bg-elevated: #1b1d24;
+        --bg-subtle: #1f212a;
+        --border: #2c2f39;
+        --border-strong: #3d4150;
+
+        --text: rgba(233, 234, 240, 0.87);
+        --text-muted: rgba(233, 234, 240, 0.55);
+        --title: #f3f4f8;
+
+        --link: #ff86ad;
+        --link-hover: #ffa8c4;
+        --accent: #ff86ad;
+        --accent-soft: rgba(255, 134, 173, 0.12);
+        --on-accent: #14151a;
+        --pomodo: #e85a4f;
+        --pomodo-hover: #ff7a6a;
+
+        --code-bg: #10121a;
+        --inlineCode-bg: rgba(146, 161, 209, 0.16);
+        --inlineCode-text: #e3e6f0;
+
+        --bg-rotated: rgb(221, 225, 236);
+        --rule-opacity: 0.12;
+        --tip-brightness: 0.46;
+
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+        --shadow-md: 0 6px 24px -10px rgba(0, 0, 0, 0.7);
+    }
+}
+
 @property --myColor1 {
     syntax: '<color>';
     initial-value: #222;
@@ -24,37 +147,129 @@
     initial-value: #222;
     inherits: false;
 }
-@media (prefers-color-scheme: dark) {
-    @property --myColor1 {
-        syntax: '<color>';
-        initial-value: rgba(255, 255, 255, 0.88);
-        inherits: false;
-    }
-    @property --myColor2 {
-        syntax: '<color>';
-        initial-value: rgba(255, 255, 255, 0.88);
-        inherits: false;
+
+/* ---------------------------------------------------------------------------
+   Base
+--------------------------------------------------------------------------- */
+
+html {
+    scroll-behavior: smooth;
+    /* Keeps anchored headings clear of the sticky header. */
+    scroll-padding-top: 6rem;
+}
+
+body {
+    background-color: var(--bg);
+    background-image: var(--bg-texture);
+    background-attachment: fixed;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+::selection {
+    background: var(--accent-soft);
+    color: var(--title);
+}
+
+/* A single, consistent focus ring everywhere. */
+:where(a, button, input, textarea, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 3px;
+}
+
+/* Page shell: keeps the footer pinned to the bottom of the viewport when a
+   page has little content, instead of leaving it floating mid-screen.
+   The vh declaration is the fallback for browsers without dvh support. */
+.site-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+/* Sticky header. Transparent at the top of the page so it does not cut a band
+   across the paper texture; frosted once the page scrolls under it. */
+.site-header {
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+.site-header.is-scrolled {
+    background: color-mix(in srgb, var(--bg) 86%, transparent);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    border-bottom-color: var(--border);
+}
+/* Without backdrop-filter a translucent bar would leave the nav unreadable. */
+@supports not ((backdrop-filter: blur(1px)) or
+    (-webkit-backdrop-filter: blur(1px))) {
+    .site-header.is-scrolled {
+        background: var(--bg);
     }
 }
 
+/* Skip link: off-screen until focused. */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+}
+.skip-link:focus {
+    left: 1rem;
+    top: 1rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-elevated);
+    color: var(--title);
+    border: 1px solid var(--border-strong);
+    border-radius: 0.5rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Theme toggle icon swap.
+
+   Done in CSS rather than in React state so there is no hydration mismatch
+   and no flash of the wrong icon.
+--------------------------------------------------------------------------- */
+
+.theme-icon-dark {
+    display: none;
+}
+:root[data-theme='dark'] .theme-icon-dark {
+    display: block;
+}
+:root[data-theme='dark'] .theme-icon-light {
+    display: none;
+}
 @media (prefers-color-scheme: dark) {
-    body {
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
+    :root:not([data-theme='light']) .theme-icon-dark {
+        display: block;
+    }
+    :root:not([data-theme='light']) .theme-icon-light {
+        display: none;
+    }
+    :root[data-theme='light'] .theme-icon-light {
+        display: block;
     }
 }
 
-@media (prefers-reduced-motion) {
-    * {
-        transition: none !important;
-    }
-}
+/* ---------------------------------------------------------------------------
+   Motion
+--------------------------------------------------------------------------- */
 
-:root {
-    --bg-rotated: white;
-}
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg-rotated: rgb(221, 225, 236);
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
     }
 }
